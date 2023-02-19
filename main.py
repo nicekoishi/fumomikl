@@ -5,34 +5,26 @@ from datetime import datetime
 import platform
 import json
 
-bot = commands.Bot(command_prefix="01c2baade9b", intents=discord.Intents.all())
-plstime = datetime.now()
+class Client(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix='01c2baade9b', intents = discord.Intents().all())
+
+    async def on_ready(self):
+        prfx = (Back.BLUE + Fore.GREEN + datetime.now().strftime("%a %H:%M:%S") + Back.RESET + Fore.WHITE + Style.BRIGHT)
+
+        print(prfx + " Starting bot!"+"\n")
+        print(prfx + " Logged in as " + Fore.GREEN + self.user.name)
+        print(prfx + " Bot ID " + Fore.GREEN + str(self.user.id))
+        print(prfx + " OS " + Fore.GREEN + str(platform.platform()))
+        print(prfx + " Discord Version " + Fore.GREEN + discord.__version__)
+        print(prfx + " Python Version " + Fore.GREEN + str(platform.python_version()))
+
+        synced = await self.tree.sync()
+        print(prfx + " Slash Commands Synced " + Fore.GREEN + str(len(synced)) + " Commands")
 
 with open("config.json","r+") as f:
-    config = json.load(f)
-    TOKEN = config["TOKEN"]
+    data = json.load(f)
+    TOKEN = data["TOKEN"]
 
-@bot.event
-async def on_ready():
-    prfx = (Back.BLUE + Fore.GREEN + plstime.strftime("%a %H:%M:%S") + Back.RESET + Fore.WHITE + Style.BRIGHT)
-
-    print(prfx + " Starting bot!"+"\n")
-    print(prfx + " Logged in as " + Fore.GREEN + bot.user.name)
-    print(prfx + " Bot ID " + Fore.GREEN + str(bot.user.id))
-    print(prfx + " OS " + Fore.GREEN + str(platform.platform()))
-    print(prfx + " Discord Version " + Fore.GREEN + discord.__version__)
-    print(prfx + " Python Version " + Fore.GREEN + str(platform.python_version()))
-
-    synced = await bot.tree.sync()
-    print(prfx + " Slash Commands Synced " + Fore.GREEN + str(len(synced)) + " Commands")
-   
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-
-    if message.content.startswith('ultrasex'):
-        await message.channel.send('https://www.youtube.com/watch?v=6IwcJh43vhI')
-
-
-bot.run(TOKEN)
+client = Client()
+client.run(TOKEN)
